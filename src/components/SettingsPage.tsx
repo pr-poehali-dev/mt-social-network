@@ -1,8 +1,16 @@
 import React, { useState } from 'react';
 import Icon from '@/components/ui/icon';
-import { User } from '@/data/mockData';
 
-interface SettingsPageProps { user: User; onUpdate: (u: Partial<User>) => void; isDark: boolean; onToggleDark: () => void; }
+interface ApiUser {
+  id: number; mt_id: string; first_name: string; last_name: string;
+  username: string; avatar: string; active_badge_id?: string;
+  badges?: Array<{ id: string }>; bio?: string; location?: string;
+  website?: string; email?: string; mt_coins?: number; streak?: number;
+  followers_count?: number; following_count?: number; posts_count?: number;
+  is_online?: boolean; join_date?: string; daily_claimed_at?: string;
+}
+
+interface SettingsPageProps { user: ApiUser; onUpdate: (u: Partial<ApiUser>) => void; isDark: boolean; onToggleDark: () => void; }
 
 const Section: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
   <div className="mt-card mb-3 overflow-hidden">
@@ -29,9 +37,9 @@ const SettingsRow: React.FC<{ icon: string; label: string; value?: string; onCli
 
 const SettingsPage: React.FC<SettingsPageProps> = ({ user, onUpdate, isDark, onToggleDark }) => {
   const [editing, setEditing] = useState<string | null>(null);
-  const [form, setForm] = useState({ firstName: user.firstName, lastName: user.lastName, bio: user.bio, location: user.location, website: user.website, email: user.email || '' });
+  const [form, setForm] = useState({ first_name: user.first_name, last_name: user.last_name, bio: user.bio ?? '', location: user.location ?? '', website: user.website ?? '', email: user.email ?? '' });
 
-  const save = () => { onUpdate({ firstName: form.firstName, lastName: form.lastName, bio: form.bio, location: form.location, website: form.website, email: form.email }); setEditing(null); };
+  const save = () => { onUpdate({ first_name: form.first_name, last_name: form.last_name, bio: form.bio, location: form.location, website: form.website, email: form.email }); setEditing(null); };
 
   const toggle = (label: string) => (
     <button onClick={onToggleDark}
@@ -51,11 +59,11 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ user, onUpdate, isDark, onT
         <div className="mt-card p-4 space-y-3">
           <div>
             <label className="text-xs font-medium mb-1.5 block" style={{ color: 'var(--mt-text-2)' }}>Имя</label>
-            <input value={form.firstName} onChange={e => setForm(f => ({ ...f, firstName: e.target.value }))} className="w-full px-3 py-2.5 text-sm rounded-xl" />
+            <input value={form.first_name} onChange={e => setForm(f => ({ ...f, first_name: e.target.value }))} className="w-full px-3 py-2.5 text-sm rounded-xl" />
           </div>
           <div>
             <label className="text-xs font-medium mb-1.5 block" style={{ color: 'var(--mt-text-2)' }}>Фамилия</label>
-            <input value={form.lastName} onChange={e => setForm(f => ({ ...f, lastName: e.target.value }))} className="w-full px-3 py-2.5 text-sm rounded-xl" />
+            <input value={form.last_name} onChange={e => setForm(f => ({ ...f, last_name: e.target.value }))} className="w-full px-3 py-2.5 text-sm rounded-xl" />
           </div>
           <div>
             <label className="text-xs font-medium mb-1.5 block" style={{ color: 'var(--mt-text-2)' }}>О себе</label>
@@ -84,7 +92,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ user, onUpdate, isDark, onT
       <h2 className="text-lg font-heading font-bold mb-4" style={{ color: 'var(--mt-text)' }}>Настройки</h2>
 
       <Section title="Аккаунт">
-        <SettingsRow icon="User" label="Редактировать профиль" value={`${user.firstName} ${user.lastName}`} onClick={() => setEditing('profile')} />
+        <SettingsRow icon="User" label="Редактировать профиль" value={`${user.first_name} ${user.last_name}`} onClick={() => setEditing('profile')} />
         <SettingsRow icon="Mail" label="Email" value={user.email || 'Не привязан — добавьте для восстановления пароля'} onClick={() => setEditing('profile')} />
         <SettingsRow icon="Lock" label="Изменить пароль" />
         <SettingsRow icon="Phone" label="Номер телефона" value="Не привязан" />

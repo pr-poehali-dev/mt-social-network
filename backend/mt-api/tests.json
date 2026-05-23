@@ -1,0 +1,33 @@
+{
+  "tests": [
+    {
+      "name": "OPTIONS CORS",
+      "method": "OPTIONS",
+      "path": "/",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Register user",
+      "method": "POST",
+      "path": "/?action=auth.register",
+      "body": {"first_name": "Тест", "last_name": "Тестов", "password": "test123"},
+      "expectedStatus": 200,
+      "expectedBody": {"token": "string"},
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Get posts (public)",
+      "method": "GET",
+      "path": "/?action=posts.list",
+      "expectedStatus": 200,
+      "expectedBody": {"posts": []},
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Search (no auth)",
+      "method": "GET",
+      "path": "/?action=users.search&q=тест",
+      "expectedStatus": 401
+    }
+  ]
+}

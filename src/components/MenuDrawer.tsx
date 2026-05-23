@@ -1,11 +1,20 @@
 import React, { useState } from 'react';
 import Icon from '@/components/ui/icon';
 import BadgeIcon from './BadgeIcon';
-import { User, formatNumber } from '@/data/mockData';
+import { formatNumber } from '@/data/mockData';
 import { ALL_BADGES } from '@/data/badges';
 
+interface ApiUser {
+  id: number; mt_id: string; first_name: string; last_name: string;
+  username: string; avatar: string; active_badge_id?: string;
+  badges?: Array<{ id: string }>; bio?: string; location?: string;
+  website?: string; email?: string; mt_coins?: number; streak?: number;
+  followers_count?: number; following_count?: number; posts_count?: number;
+  is_online?: boolean; join_date?: string; daily_claimed_at?: string;
+}
+
 interface MenuDrawerProps {
-  user: User;
+  user: ApiUser;
   onNavigate: (section: string) => void;
   onClose: () => void;
   onLogout: () => void;
@@ -41,7 +50,7 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({ user, onNavigate, onClose, onLo
             <img src={user.avatar} alt="" className="w-14 h-14 rounded-2xl object-cover border-2 border-white/20" />
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
-                <span className="text-white font-bold truncate">{user.firstName} {user.lastName}</span>
+                <span className="text-white font-bold truncate">{user.first_name} {user.last_name}</span>
                 <BadgeIcon badge={activeBadge} size="sm" showTooltip />
               </div>
               <p className="text-blue-200 text-sm">@{user.username}</p>
@@ -50,12 +59,12 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({ user, onNavigate, onClose, onLo
           {/* MTCoins */}
           <div className="flex items-center gap-3 p-3 rounded-xl" style={{ background: 'rgba(255,255,255,0.12)' }}>
             <div className="text-center flex-1">
-              <p className="text-yellow-300 text-lg font-bold font-heading">🪙 {formatNumber(user.mtCoins)}</p>
+              <p className="text-yellow-300 text-lg font-bold font-heading">🪙 {formatNumber(user.mt_coins ?? 0)}</p>
               <p className="text-blue-200 text-xs">MTCoins</p>
             </div>
             <div className="w-px h-8" style={{ background: 'rgba(255,255,255,0.2)' }} />
             <div className="text-center flex-1">
-              <p className="text-white text-lg font-bold font-heading">🔥 {user.streak}</p>
+              <p className="text-white text-lg font-bold font-heading">🔥 {user.streak ?? 0}</p>
               <p className="text-blue-200 text-xs">Дней подряд</p>
             </div>
           </div>

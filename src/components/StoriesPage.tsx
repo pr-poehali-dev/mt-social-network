@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
 import Icon from '@/components/ui/icon';
-import { User, MOCK_USERS, formatTime } from '@/data/mockData';
+import { formatTime } from '@/data/mockData';
+
+interface ApiUser {
+  id: number; mt_id: string; first_name: string; last_name: string;
+  username: string; avatar: string;
+}
 
 interface Story {
   id: string;
-  author: User;
+  author: ApiUser;
   gradient: string;
   text: string;
   viewed: boolean;
@@ -20,13 +25,7 @@ const GRADIENTS = [
   'linear-gradient(135deg,#0891b2,#06b6d4)',
 ];
 
-const INITIAL_STORIES: Story[] = MOCK_USERS.flatMap((u, i) => [{
-  id: `s${i}`, author: u,
-  gradient: GRADIENTS[i % GRADIENTS.length],
-  text: ['Деловая встреча прошла отлично! 🤝', 'Новый проект запущен! 🚀', 'Код пишется сам 💻', 'Отличный день!'][i] || 'История',
-  viewed: i > 1,
-  createdAt: new Date(Date.now() - i * 1800000),
-}]);
+const INITIAL_STORIES: Story[] = [];
 
 const StoryViewer: React.FC<{ stories: Story[]; idx: number; onClose: () => void }> = ({ stories, idx: initIdx, onClose }) => {
   const [idx, setIdx] = useState(initIdx);
@@ -56,7 +55,7 @@ const StoryViewer: React.FC<{ stories: Story[]; idx: number; onClose: () => void
           <div className="flex items-center gap-2">
             <img src={story.author.avatar} alt="" className="w-8 h-8 rounded-full border-2 border-white" />
             <div>
-              <p className="text-white text-sm font-medium">{story.author.firstName} {story.author.lastName}</p>
+              <p className="text-white text-sm font-medium">{story.author.first_name} {story.author.last_name}</p>
               <p className="text-white/70 text-xs">{formatTime(story.createdAt)}</p>
             </div>
             <button onClick={onClose} className="ml-auto text-white/80 hover:text-white">
@@ -81,7 +80,7 @@ const StoryViewer: React.FC<{ stories: Story[]; idx: number; onClose: () => void
   );
 };
 
-const StoriesPage: React.FC<{ currentUser: User }> = ({ currentUser }) => {
+const StoriesPage: React.FC<{ currentUser: ApiUser }> = ({ currentUser }) => {
   const [stories, setStories] = useState<Story[]>(INITIAL_STORIES);
   const [viewing, setViewing] = useState<number | null>(null);
   const [adding, setAdding] = useState(false);
@@ -99,9 +98,10 @@ const StoriesPage: React.FC<{ currentUser: User }> = ({ currentUser }) => {
     setNewText(''); setAdding(false);
   };
 
-  const grouped = Object.values(stories.reduce<Record<string, { user: User; stories: Story[] }>>((acc, s) => {
-    if (!acc[s.author.id]) acc[s.author.id] = { user: s.author, stories: [] };
-    acc[s.author.id].stories.push(s);
+  const grouped = Object.values(stories.reduce<Record<string, { user: ApiUser; stories: Story[] }>>((acc, s) => {
+    const key = String(s.author.id);
+    if (!acc[key]) acc[key] = { user: s.author, stories: [] };
+    acc[key].stories.push(s);
     return acc;
   }, {}));
 
@@ -184,7 +184,7 @@ const StoriesPage: React.FC<{ currentUser: User }> = ({ currentUser }) => {
                 )}
               </button>
               <div>
-                <p className="font-medium text-sm" style={{ color: 'var(--mt-text)' }}>{user.firstName} {user.lastName}</p>
+                <p className="font-medium text-sm" style={{ color: 'var(--mt-text)' }}>{user.first_name} {user.last_name}</p>
                 <p className="text-xs" style={{ color: 'var(--mt-text-2)' }}>{uStories.length} {uStories.length === 1 ? 'история' : 'истории'} · {formatTime(uStories[0].createdAt)}</p>
               </div>
             </div>

@@ -2,9 +2,18 @@ import React, { useState } from 'react';
 import Icon from '@/components/ui/icon';
 import BadgeIcon from './BadgeIcon';
 import { Badge, RARITY_CONFIG, Rarity, generateDailyShop, ALL_BADGES, BADGE_PRICES } from '@/data/badges';
-import { User, formatNumber } from '@/data/mockData';
+import { formatNumber } from '@/data/mockData';
 
-interface BadgeShopPageProps { currentUser: User; onBuy: (badge: Badge, price: number) => void; }
+interface ApiUser {
+  id: number; mt_id: string; first_name: string; last_name: string;
+  username: string; avatar: string; active_badge_id?: string;
+  badges?: Array<{ id: string }>; bio?: string; location?: string;
+  website?: string; email?: string; mt_coins?: number; streak?: number;
+  followers_count?: number; following_count?: number; posts_count?: number;
+  is_online?: boolean; join_date?: string; daily_claimed_at?: string;
+}
+
+interface BadgeShopPageProps { currentUser: ApiUser; onBuy: (badge: object, price: number) => void; }
 
 const BadgeShopPage: React.FC<BadgeShopPageProps> = ({ currentUser, onBuy }) => {
   const [shopBadges] = useState<Badge[]>(generateDailyShop());
@@ -12,7 +21,7 @@ const BadgeShopPage: React.FC<BadgeShopPageProps> = ({ currentUser, onBuy }) => 
   const [selected, setSelected] = useState<Badge | null>(null);
   const [bought, setBought] = useState<Set<string>>(new Set());
   const [showAll, setShowAll] = useState(false);
-  const [coins, setCoins] = useState(currentUser.mtCoins);
+  const [coins, setCoins] = useState(currentUser.mt_coins ?? 0);
 
   const handleBuy = (badge: Badge) => {
     const price = BADGE_PRICES[badge.rarity];
